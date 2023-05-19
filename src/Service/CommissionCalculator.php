@@ -98,7 +98,7 @@ class CommissionCalculator
 
         if ($weeklyWithdrawCount <= self::PRIVATE_WITHDRAW_FREE_OPERATIONS) {
             $remainingFreeAmount = (self::PRIVATE_WITHDRAW_FREE_AMOUNT
-                    - $privateWithdrawCounts[$weekKey]['used_amount']);
+                - $privateWithdrawCounts[$weekKey]['used_amount']);
             $amountBaseCurrency = $amount / $currencyRate;
             $exceededAmount = max($amount - $remainingFreeAmount * $currencyRate, 0);
             $privateWithdrawCounts[$weekKey]['used_amount'] += min($amountBaseCurrency, $remainingFreeAmount);
@@ -127,7 +127,6 @@ class CommissionCalculator
         return ($currency === 'JPY') ? 0 : 2;
     }
 }
-
 $calculator = new CommissionCalculator('input.csv');
 $commissionFees = $calculator->calculateCommissionFees();
 print_r($commissionFees);
