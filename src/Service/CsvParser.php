@@ -1,5 +1,5 @@
 <?php
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace PayX\CommissionTask\Service;
 
@@ -11,14 +11,14 @@ class CsvParser
 
     public function __construct(string $filename)
     {
-        $this->filename = __DIR__ . '/' .$filename;
+        $this->filename = __DIR__ . '/' . $filename;
     }
 
     public function parseFile(): array
     {
         $csvFile = fopen($this->filename, 'r');
         if (!$csvFile) {
-            throw new Exception("Failed to open input file.");
+            throw new Exception("Failed to open input  file.");
         }
 
         $data = [];
