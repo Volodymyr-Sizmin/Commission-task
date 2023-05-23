@@ -31,4 +31,3 @@ class CsvParser
         return $data;
     }
 }
-

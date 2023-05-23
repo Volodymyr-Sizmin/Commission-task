@@ -2,7 +2,13 @@
 
 namespace PayX\CommissionTask\Interfaces;
 
+use PayX\CommissionTask\DTO\CommissionData;
+
 interface CommissionCalculatorInterface
 {
-    public function calculateCommission(float $amount, string $currency): float;
+    public function calculateCommission(CommissionData $data): float;
+
+    public function isApplied($operation, $client);
+
+
 }

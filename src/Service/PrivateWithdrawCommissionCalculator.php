@@ -5,57 +5,60 @@ declare(strict_types=1);
 namespace PayX\CommissionTask\Service;
 
 use  Carbon\Carbon;
-use PayX\CommissionTask\Interfaces\PrivateWithdrawCommissionCalculatorInterface;
+use PayX\CommissionTask\DTO\CommissionData;
+use PayX\CommissionTask\Interfaces\CommissionCalculatorInterface;
 
-class PrivateWithdrawCommissionCalculator implements PrivateWithdrawCommissionCalculatorInterface
+class PrivateWithdrawCommissionCalculator implements CommissionCalculatorInterface
 {
     private const PRIVATE_WITHDRAW_COMMISSION_RATE = 0.003; // 0.3%
     private const PRIVATE_WITHDRAW_FREE_AMOUNT = 1000.00;
     private const PRIVATE_WITHDRAW_FREE_OPERATIONS = 3;
 
     private array $currencyRates;
+    private Rounding $rounding;
+    private PrivateWithdrawCountTracker $countTracker;
 
-    public function __construct(array $currencyRates)
+    public function __construct(array $currencyRates, Rounding $rounding, PrivateWithdrawCountTracker $countTracker)
     {
         $this->currencyRates = $currencyRates;
+        $this->rounding = $rounding;
+        $this->countTracker = $countTracker;
     }
 
-    public function calculatePrivateWithdrawCommission(
-        int    $userId,
-        float  $amount,
-        string $currency,
-        string $operationDate,
-        array  &$privateWithdrawCounts
-    ): float
+    public function calculateCommission(CommissionData $data): float
     {
         $commissionFee = 0;
-        $weekStart = Carbon::parse($operationDate)->startOfWeek();
-        $weekEnd = Carbon::parse($operationDate)->endOfWeek();
-        $weekKey = $userId . '_' . $weekStart->format('Y-m-d') . '_' . $weekEnd->format('Y-m-d');
+        $weekStart = Carbon::parse($data->operationDate)->startOfWeek();
+        $weekEnd = Carbon::parse($data->operationDate)->endOfWeek();
+        $weekKey = $data->userId . '_' . $weekStart->format('Y-m-d') . '_' . $weekEnd->format('Y-m-d');
 
-        if (!isset($privateWithdrawCounts[$weekKey])) {
-            $privateWithdrawCounts[$weekKey] = [
-                'count' => 0,
-                'used_amount' => 0,
-            ];
-        }
-
-        $weeklyWithdrawCount = ++$privateWithdrawCounts[$weekKey]['count'];
-        $currencyRate = $this->currencyRates[$currency];
+        $weeklyWithdrawCount = $this->countTracker->getWeeklyWithdrawCount($data->userId, $weekKey);
+        $currencyRate = $this->currencyRates[$data->currency];
 
         if ($weeklyWithdrawCount <= self::PRIVATE_WITHDRAW_FREE_OPERATIONS) {
             $remainingFreeAmount = (self::PRIVATE_WITHDRAW_FREE_AMOUNT
-                - $privateWithdrawCounts[$weekKey]['used_amount']);
-            $amountBaseCurrency = $amount / $currencyRate;
-            $exceededAmount = max($amount - $remainingFreeAmount * $currencyRate, 0);
-            $privateWithdrawCounts[$weekKey]['used_amount'] += min($amountBaseCurrency, $remainingFreeAmount);
-            $commissionFee = Currency::roundUp($exceededAmount * self::PRIVATE_WITHDRAW_COMMISSION_RATE, $currency);
+                - $this->countTracker->getUsedAmount($data->userId, $weekKey));
+            $amountBaseCurrency = $data->amount / $currencyRate;
+            $exceededAmount = max($data->amount - $remainingFreeAmount * $currencyRate, 0);
+            $this->countTracker->incrementUsedAmount(
+                $data->userId, $weekKey,
+                min($amountBaseCurrency, $remainingFreeAmount));
+            $commissionFee = $this->rounding->roundUp(
+                $exceededAmount * self::PRIVATE_WITHDRAW_COMMISSION_RATE,
+                $data->currency
+            );
         } else {
-            $commissionFee = Currency::roundUp($amount * self::PRIVATE_WITHDRAW_COMMISSION_RATE, $currency);
+            $commissionFee = $this->rounding->roundUp(
+                $data->amount * self::PRIVATE_WITHDRAW_COMMISSION_RATE,
+                $data->currency
+            );
         }
 
         return $commissionFee;
     }
+
+    public function isApplied($operation, $client): bool
+    {
+        return $operation === 'withdraw' && $client === 'private';
+    }
 }
-
-

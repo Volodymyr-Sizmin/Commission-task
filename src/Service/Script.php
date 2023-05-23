@@ -4,25 +4,21 @@ declare(strict_types=1);
 
 namespace PayX\CommissionTask\Service;
 
-
 use Exception;
 
 require_once __DIR__ . '/../../vendor/autoload.php';
 
-function calculateCommissionFees(string $filename): array
+function calculateCommissionFees(string $filename, Currency $currency): array
 {
     try {
         $csvParser = new CsvParser($filename);
         $parsedData = $csvParser->parseFile();
-        print_r($parsedData);
 
-        $currencyRates = Currency::getCurrencyRates();
+        $currencyRates = $currency->getCurrencyRates();
         $commissionCalculators = [
-            'deposit' => new DepositCommissionCalculator(),
-            'withdraw' => [
-                'private' => new PrivateWithdrawCommissionCalculator($currencyRates),
-                'business' => new BusinessWithdrawCommissionCalculator(),
-            ]
+            new DepositCommissionCalculator(new Rounding()),
+            new PrivateWithdrawCommissionCalculator($currencyRates, new Rounding(), new PrivateWithdrawCountTracker()),
+            new BusinessWithdrawCommissionCalculator(new Rounding()),
         ];
         $calculator = new CommissionCalculator($parsedData, $commissionCalculators);
 
@@ -38,4 +34,3 @@ $filename = 'input.csv';
 $commissionFees = calculateCommissionFees($filename);
 
 print_r($commissionFees);
-
