@@ -32,7 +32,7 @@ class PrivateWithdrawCommissionCalculator implements CommissionCalculatorInterfa
         $weekEnd = Carbon::parse($data->operationDate)->endOfWeek();
         $weekKey = $data->userId . '_' . $weekStart->format('Y-m-d') . '_' . $weekEnd->format('Y-m-d');
 
-        $weeklyWithdrawCount = $this->countTracker->getWeeklyWithdrawCount($data->userId, $weekKey);
+        $this->countTracker->getWeeklyWithdrawCount($data->userId, $weekKey);
         $weeklyWithdrawCount = $this->countTracker->incrementCount($data->userId, $weekKey);
         $currencyRate = $this->currencyRates[$data->currency];
 
