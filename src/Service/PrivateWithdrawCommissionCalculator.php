@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace PayX\CommissionTask\Service;
 
 use  Carbon\Carbon;
-use PayX\CommissionTask\DTO\CommissionData;
+use PayX\CommissionTask\DTO\CommissionDataDTO;
 use PayX\CommissionTask\Interfaces\CommissionCalculatorInterface;
 
 class PrivateWithdrawCommissionCalculator implements CommissionCalculatorInterface
@@ -25,7 +25,7 @@ class PrivateWithdrawCommissionCalculator implements CommissionCalculatorInterfa
         $this->countTracker = $countTracker;
     }
 
-    public function calculateCommission(CommissionData $data): float
+    public function calculateCommission(CommissionDataDTO $data): float
     {
         $commissionFee = 0;
         $weekStart = Carbon::parse($data->operationDate)->startOfWeek();
@@ -33,9 +33,10 @@ class PrivateWithdrawCommissionCalculator implements CommissionCalculatorInterfa
         $weekKey = $data->userId . '_' . $weekStart->format('Y-m-d') . '_' . $weekEnd->format('Y-m-d');
 
         $weeklyWithdrawCount = $this->countTracker->getWeeklyWithdrawCount($data->userId, $weekKey);
+        $weeklyWithdrawCount = $this->countTracker->incrementCount($data->userId, $weekKey);
         $currencyRate = $this->currencyRates[$data->currency];
 
-        if ($weeklyWithdrawCount <= self::PRIVATE_WITHDRAW_FREE_OPERATIONS) {
+        if ($weeklyWithdrawCount < self::PRIVATE_WITHDRAW_FREE_OPERATIONS) {
             $remainingFreeAmount = (self::PRIVATE_WITHDRAW_FREE_AMOUNT
                 - $this->countTracker->getUsedAmount($data->userId, $weekKey));
             $amountBaseCurrency = $data->amount / $currencyRate;

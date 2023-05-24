@@ -1,14 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace PayX\CommissionTask\DTO;
 
-class CommissionData
+class CommissionDataDTO
 {
     public int $userId;
     public float $amount;
     public string $currency;
     public string $operationDate;
-    public array $privateWithdrawCounts;
     public string $operationType;
     public string $userType;
 
@@ -17,7 +18,6 @@ class CommissionData
         float $amount,
         string $currency,
         string $operationDate,
-        array &$privateWithdrawCounts,
         string $operationType,
         string $userType
     ) {
@@ -25,7 +25,6 @@ class CommissionData
         $this->amount = $amount;
         $this->currency = $currency;
         $this->operationDate = $operationDate;
-        $this->privateWithdrawCounts = &$privateWithdrawCounts;
         $this->operationType = $operationType;
         $this->userType = $userType;
     }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace PayX\CommissionTask\Service;
 
 class PrivateWithdrawCountTracker
@@ -11,7 +13,7 @@ class PrivateWithdrawCountTracker
         $this->counts = [];
     }
 
-    public function incrementCount(int $userId, string $weekKey): void
+    public function incrementCount(int $userId, string $weekKey): int
     {
         if (!isset($this->counts[$userId])) {
             $this->counts[$userId] = [];
@@ -24,11 +26,12 @@ class PrivateWithdrawCountTracker
             ];
         }
 
-        $this->counts[$userId][$weekKey]['count']++;
+        return $this->counts[$userId][$weekKey]['count']++;
     }
 
     public function getWeeklyWithdrawCount(int $userId, string $weekKey): int
     {
+
         return $this->counts[$userId][$weekKey]['count'] ?? 0;
     }
 

@@ -13,7 +13,7 @@ To run the application, follow these steps:
 4. Run the following command to install the dependencies:
 composer install
 5. To initiate the calculation of commission fees, run the following command:
-/bin/php src/Service/Script.php
+/bin/php src/Service/CalculationSystem.php
    This will process the transactions and display the calculated commission fees.
 
 

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace PayX\CommissionTask\Service;
 
-use PayX\CommissionTask\DTO\CommissionData;
+use PayX\CommissionTask\DTO\CommissionDataDTO;
 use PayX\CommissionTask\Interfaces\CommissionCalculatorInterface;
 
 class BusinessWithdrawCommissionCalculator implements CommissionCalculatorInterface
@@ -18,7 +18,7 @@ class BusinessWithdrawCommissionCalculator implements CommissionCalculatorInterf
         $this->rounding = $rounding;
     }
 
-    public function calculateCommission(CommissionData $data): float
+    public function calculateCommission(CommissionDataDTO $data): float
     {
         return $this->rounding->roundUp($data->amount * self::BUSINESS_WITHDRAW_COMMISSION_RATE, $data->currency);
     }

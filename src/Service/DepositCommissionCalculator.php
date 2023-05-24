@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace PayX\CommissionTask\Service;
 
-use PayX\CommissionTask\DTO\CommissionData;
+use PayX\CommissionTask\DTO\CommissionDataDTO;
 use PayX\CommissionTask\Interfaces\CommissionCalculatorInterface;
 
 class DepositCommissionCalculator implements CommissionCalculatorInterface
@@ -18,12 +18,12 @@ class DepositCommissionCalculator implements CommissionCalculatorInterface
         $this->rounding = $rounding;
     }
 
-    public function calculateCommission(CommissionData $data): float
+    public function calculateCommission(CommissionDataDTO $data): float
     {
         return $this->rounding->roundUp($data->amount * self::DEPOSIT_COMMISSION_RATE, $data->currency);
     }
 
-    public function isApplied($operation, $client)
+    public function isApplied($operation, $client): bool
     {
         return $operation === 'deposit' && ($client === 'private' || $client === 'business');
     }

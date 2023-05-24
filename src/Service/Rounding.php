@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace PayX\CommissionTask\Service;
 
 class Rounding
 {
     public function roundUp(float $amount, string $currency): float
     {
-        $decimalPlaces = self::getCurrencyDecimalPlaces($currency);
+        $decimalPlaces = $this->getCurrencyDecimalPlaces($currency);
         $multiplier = 10 ** $decimalPlaces;
 
         return ceil($amount * $multiplier) / $multiplier;
