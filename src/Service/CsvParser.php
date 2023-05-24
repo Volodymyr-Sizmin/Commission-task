@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace PayX\CommissionTask\Service;
@@ -31,4 +32,3 @@ class CsvParser
         return $data;
     }
 }
-
