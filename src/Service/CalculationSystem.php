@@ -6,6 +6,9 @@ namespace PayX\CommissionTask\Service;
 
 use Exception;
 use PayX\CommissionTask\DTO\CommissionDataDTO;
+use PayX\CommissionTask\Service\Calculators\BusinessWithdrawCommissionCalculator;
+use PayX\CommissionTask\Service\Calculators\DepositCommissionCalculator;
+use PayX\CommissionTask\Service\Calculators\PrivateWithdrawCommissionCalculator;
 
 require_once __DIR__ . '/../../vendor/autoload.php';
 
@@ -27,8 +30,8 @@ class CalculationSystem
 
             foreach ($parsedData as $row) {
                 $commissionData = new CommissionDataDTO(
-                    (int) $row[1],
-                    (float) $row[4],
+                    (int)$row[1],
+                    (float)$row[4],
                     $row[5],
                     $row[0],
                     $row[3],

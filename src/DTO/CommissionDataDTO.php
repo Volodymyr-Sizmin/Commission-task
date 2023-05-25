@@ -14,13 +14,14 @@ class CommissionDataDTO
     public string $userType;
 
     public function __construct(
-        int $userId,
-        float $amount,
+        int    $userId,
+        float  $amount,
         string $currency,
         string $operationDate,
         string $operationType,
         string $userType
-    ) {
+    )
+    {
         $this->userId = $userId;
         $this->amount = $amount;
         $this->currency = $currency;

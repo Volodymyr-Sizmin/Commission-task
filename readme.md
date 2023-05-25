@@ -23,6 +23,7 @@ bin/phpunit tests
 
 
 # Functionality
+
 The main functionality of the application is implemented in the CommissionCalculator class, which performs the calculation of commission fees based on the transaction data provided in the CSV file. The commission fees are calculated according to the given business rules:
 ### 1. Deposit rule
 All deposits are charged 0.03% of deposit amount.
@@ -38,3 +39,16 @@ Commission fee - 0.3% from withdrawn amount.
 #### 2.2 Business Clients
 
 Commission fee - 0.5% from withdrawn amount.
+
+## Overview
+
+The Commission Calculator uses the strategy pattern  to encapsulate the commission calculation algorithms into separate calculator classes. This allows for easy modification or addition of new commission calculation rules without affecting the core logic of the application. The aplication   follows the SOLID principle, specifically the Single Responsibility Principle, by separating the calculation logic into individual calculator classes.
+
+#### Pros of this implementation approach:
+
+1. Clear separation of responsibilities, making the code easier to understand and maintain.
+2. Easy extensibility: New commission calculators can be added without modifying existing code, following the open-closed principle.
+3. Reusability: The commission calculators can be reused in other applications or scenarios where commission calculations are needed.
+4. Testability: The separate calculator classes can be unit tested independently.
+
+Alternative implementation is writing calculation logic directly in the CommissionCalculator. This would simplify the code by removing the need for separate calculator classes. However, this approach only works if the calculations will never change and no new ones will be added.  In 99% of cases, it is better to use OOP approach.

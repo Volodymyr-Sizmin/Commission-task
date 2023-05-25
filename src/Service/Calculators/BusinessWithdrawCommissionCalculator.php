@@ -2,10 +2,11 @@
 
 declare(strict_types=1);
 
-namespace PayX\CommissionTask\Service;
+namespace PayX\CommissionTask\Service\Calculators;
 
 use PayX\CommissionTask\DTO\CommissionDataDTO;
 use PayX\CommissionTask\Interfaces\CommissionCalculatorInterface;
+use PayX\CommissionTask\Service\Rounding;
 
 class BusinessWithdrawCommissionCalculator implements CommissionCalculatorInterface
 {
@@ -23,8 +24,8 @@ class BusinessWithdrawCommissionCalculator implements CommissionCalculatorInterf
         return $this->rounding->roundUp($data->amount * self::BUSINESS_WITHDRAW_COMMISSION_RATE, $data->currency);
     }
 
-    public function isApplied($operation, $client): bool
+    public function isApplied(CommissionDataDTO $data): bool
     {
-        return $operation === 'withdraw' && $client === 'business';
+        return $data->operationType === 'withdraw' && $data->userType === 'business';
     }
 }

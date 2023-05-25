@@ -2,11 +2,13 @@
 
 declare(strict_types=1);
 
-namespace PayX\CommissionTask\Service;
+namespace PayX\CommissionTask\Service\Calculators;
 
-use  Carbon\Carbon;
+use Carbon\Carbon;
 use PayX\CommissionTask\DTO\CommissionDataDTO;
 use PayX\CommissionTask\Interfaces\CommissionCalculatorInterface;
+use PayX\CommissionTask\Service\PrivateWithdrawCountTracker;
+use PayX\CommissionTask\Service\Rounding;
 
 class PrivateWithdrawCommissionCalculator implements CommissionCalculatorInterface
 {
@@ -27,7 +29,6 @@ class PrivateWithdrawCommissionCalculator implements CommissionCalculatorInterfa
 
     public function calculateCommission(CommissionDataDTO $data): float
     {
-        $commissionFee = 0;
         $weekStart = Carbon::parse($data->operationDate)->startOfWeek();
         $weekEnd = Carbon::parse($data->operationDate)->endOfWeek();
         $weekKey = $data->userId . '_' . $weekStart->format('Y-m-d') . '_' . $weekEnd->format('Y-m-d');
@@ -58,8 +59,8 @@ class PrivateWithdrawCommissionCalculator implements CommissionCalculatorInterfa
         return $commissionFee;
     }
 
-    public function isApplied($operation, $client): bool
+    public function isApplied(CommissionDataDTO $data): bool
     {
-        return $operation === 'withdraw' && $client === 'private';
+        return $data->operationType === 'withdraw' && $data->userType === 'private';
     }
 }
