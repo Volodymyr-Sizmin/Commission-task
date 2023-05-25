@@ -28,7 +28,7 @@ class CommissionCalculator
     private function getCalculator(CommissionDataDTO $data): CommissionCalculatorInterface
     {
         foreach ($this->commissionCalculators as $calculator) {
-            if ($calculator->isApplied($data->operationType, $data->userType)) {
+            if ($calculator->isApplied($data)) {
                 return $calculator;
             }
         }

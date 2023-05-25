@@ -20,7 +20,6 @@ class CalculationSystemFunctionalTest extends TestCase
         parent::setUp();
 
         $this->filename = '/../../tests/Service/test_data.csv';
-        $this->currency = $this->createStub(Currency::class);
 
         $this->currency = $this->getMockBuilder(Currency::class)
             ->onlyMethods(['getCurrencyRates'])
